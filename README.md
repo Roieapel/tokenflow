@@ -20,6 +20,18 @@ Both draw from the same company account.
 
 One Claude Code session consumes what a PM uses in a week. The engineer hits the rate limit and stops dead. The PM's unused allocation sits idle and **expires at month end**. The company paid for both.
 
+### Today — Engineers Blocked, PM Tokens Wasted
+
+Usage follows a power law. Engineers blow past the cap; every other role expires unused every month.
+
+![Chart: How tokens are actually used — power law distribution](docs/chart-before.png)
+
+### After Redistribution — Same Budget, Zero Waste
+
+The proxy detects idle PM and designer bandwidth and routes it to blocked engineers automatically. No one notices. No one waits.
+
+![Chart: After redistribution — same $85K, zero waste, engineers unblocked](docs/chart-after.png)
+
 ---
 
 ## The Market
