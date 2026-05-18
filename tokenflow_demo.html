@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TokenFlow — Enterprise AI Token Redistribution</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --primary:#6750A4;
+  --on-primary:#FFFFFF;
+  --primary-container:#EADDFF;
+  --on-primary-container:#21005D;
+  --secondary:#625B71;
+  --secondary-container:#E8DEF8;
+  --on-secondary-container:#1D192B;
+  --tertiary:#7D5260;
+  --tertiary-container:#FFD8E4;
+  --on-tertiary-container:#31111D;
+  --error:#B3261E;
+  --error-container:#F9DEDC;
+  --on-error-container:#410E0B;
+  --surface:#FEF7FF;
+  --on-surface:#1C1B1F;
+  --on-surface-variant:#49454F;
+  --outline-variant:#CAC4D0;
+  --surface-container-low:#F7F2FA;
+  --surface-container:#F3EDF7;
+  --surface-container-high:#ECE6F0;
+  --surface-container-highest:#E6E0E9;
+  --elev1:0 1px 2px rgba(0,0,0,.3),0 1px 3px 1px rgba(0,0,0,.15);
+  --elev2:0 1px 2px rgba(0,0,0,.3),0 2px 6px 2px rgba(0,0,0,.15);
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+body{background:var(--surface);color:var(--on-surface);padding:24px;min-height:100vh;}
+
+.top-bar{background:var(--surface-container);padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;border-radius:16px;margin-bottom:16px;}
+.top-bar-title{font-size:22px;font-weight:700;color:var(--on-surface);letter-spacing:-.4px;}
+.top-bar-sub{font-size:11px;color:var(--on-surface-variant);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.live-chip{display:flex;align-items:center;gap:6px;background:var(--primary-container);color:var(--on-primary-container);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--surface-container-low);border-radius:16px;padding:14px 16px;box-shadow:var(--elev1);}
+.stat-card.primary{background:var(--primary-container);}
+.stat-card.error{background:var(--error-container);}
+.stat-label{font-size:11px;font-weight:600;color:var(--on-surface-variant);margin-bottom:4px;letter-spacing:.3px;text-transform:uppercase;}
+.stat-card.primary .stat-label{color:var(--on-primary-container);opacity:.75;}
+.stat-card.error .stat-label{color:var(--on-error-container);opacity:.75;}
+.stat-val{font-size:24px;font-weight:700;letter-spacing:-.5px;}
+.stat-card.primary .stat-val{color:var(--on-primary-container);}
+.stat-card.error .stat-val{color:var(--on-error-container);}
+.stat-sub{font-size:11px;color:var(--on-surface-variant);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.stat-card.primary .stat-sub,.stat-card.error .stat-sub{opacity:.65;}
+
+.layout{display:grid;grid-template-columns:1fr 310px;gap:12px;margin-bottom:12px;}
+.card{background:var(--surface-container-low);border-radius:16px;padding:16px;box-shadow:var(--elev1);}
+.card-title{font-size:10px;font-weight:700;color:var(--on-surface-variant);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;}
+
+.user-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--outline-variant);}
+.user-row:last-child{border-bottom:none;}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.avatar.eng{background:var(--primary-container);color:var(--on-primary-container);}
+.avatar.pm{background:var(--secondary-container);color:var(--on-secondary-container);}
+.avatar.ops{background:var(--surface-container-highest);color:var(--on-surface-variant);}
+.user-info{min-width:0;flex:0 0 128px;}
+.user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-role{font-size:10px;color:var(--on-surface-variant);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.bar-area{flex:1;display:flex;flex-direction:column;gap:3px;}
+.bar-track{height:6px;background:var(--surface-container-highest);border-radius:3px;overflow:hidden;position:relative;}
+.bar-own{height:100%;border-radius:3px;position:absolute;left:0;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.bar-pool{height:100%;border-radius:3px;position:absolute;opacity:.65;transition:left .8s cubic-bezier(.4,0,.2,1),width .8s cubic-bezier(.4,0,.2,1);}
+.bar-label{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--on-surface-variant);display:flex;justify-content:space-between;}
+.chip{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;flex-shrink:0;letter-spacing:.2px;}
+.chip-pool{background:var(--primary-container);color:var(--on-primary-container);}
+.chip-ok{background:var(--secondary-container);color:var(--on-secondary-container);}
+.chip-low{background:var(--tertiary-container);color:var(--on-tertiary-container);}
+.chip-blocked{background:var(--error-container);color:var(--on-error-container);}
+
+.pool-card{background:var(--primary-container);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--elev1);}
+.pool-label{font-size:10px;font-weight:700;color:var(--on-primary-container);opacity:.75;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.pool-val{font-size:32px;font-weight:700;color:var(--on-primary-container);letter-spacing:-1.5px;}
+.pool-sub{font-size:10px;color:var(--on-primary-container);opacity:.65;font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.pool-track{height:8px;background:rgba(103,80,164,.15);border-radius:4px;margin-top:12px;overflow:hidden;}
+.pool-fill{height:100%;border-radius:4px;background:var(--primary);transition:width 1s ease;}
+
+.log-card{background:var(--surface-container-low);border-radius:16px;padding:16px;box-shadow:var(--elev1);}
+.event{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--outline-variant);font-size:12px;}
+.event:last-child{border-bottom:none;}
+.event-time{color:var(--on-surface-variant);font-family:'JetBrains Mono',monospace;flex-shrink:0;width:38px;font-size:11px;}
+.event-txt{line-height:1.5;color:var(--on-surface);}
+.ev-primary{color:var(--primary);font-weight:600;}
+.ev-error{color:var(--error);font-weight:600;}
+.ev-tertiary{color:var(--tertiary);font-weight:600;}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-filled{background:var(--primary);color:var(--on-primary);border:none;border-radius:20px;padding:12px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;width:100%;letter-spacing:.1px;transition:box-shadow .2s;}
+.btn-filled:hover{box-shadow:var(--elev2);}
+.btn-tonal{background:var(--secondary-container);color:var(--on-secondary-container);border:none;border-radius:20px;padding:12px 24px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;width:100%;letter-spacing:.1px;transition:box-shadow .2s;}
+.btn-tonal:hover{box-shadow:var(--elev1);}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <div class="top-bar-title">TokenFlow</div>
+    <div class="top-bar-sub">Enterprise AI Token Redistribution · Anthropic Enterprise</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <div class="live-chip"><span class="live-dot" id="live-dot"></span><span id="live-label">Demo mode</span></div>
+    <button id="connect-btn" onclick="toggleConnection()" style="font-size:11px;font-family:'JetBrains Mono',monospace;background:var(--surface-container-high);border:none;border-radius:12px;padding:6px 12px;cursor:pointer;color:var(--on-surface-variant);">Connect to API</button>
+  </div>
+</div>
+
+<!-- API config panel (hidden by default) -->
+<div id="api-config" style="display:none;background:var(--surface-container);border-radius:12px;padding:12px 16px;margin-bottom:12px;display:none;gap:12px;align-items:center;flex-wrap:wrap;">
+  <span style="font-size:11px;font-weight:700;color:var(--on-surface-variant);letter-spacing:.5px;text-transform:uppercase;">API</span>
+  <input id="api-url" value="http://localhost:8080" style="font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--outline-variant);border-radius:8px;padding:6px 10px;background:var(--surface);color:var(--on-surface);width:220px;" placeholder="http://localhost:8080">
+  <input id="api-token" type="password" style="font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--outline-variant);border-radius:8px;padding:6px 10px;background:var(--surface);color:var(--on-surface);width:200px;" placeholder="ADMIN_DASHBOARD_TOKEN">
+  <button onclick="connectToAPI()" style="background:var(--primary);color:#fff;border:none;border-radius:12px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;">Connect</button>
+  <button onclick="disconnectAPI()" style="background:var(--surface-container-high);color:var(--on-surface-variant);border:none;border-radius:12px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;">Use Demo</button>
+  <span id="conn-status" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--on-surface-variant);"></span>
+</div>
+
+<div class="stat-row">
+  <div class="stat-card primary">
+    <div class="stat-label">Pool available</div>
+    <div class="stat-val" id="pool-stat">847M</div>
+    <div class="stat-sub">tokens ready to lend</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Saved this month</div>
+    <div class="stat-val">$28,400</div>
+    <div class="stat-sub">would have expired</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Engineers unblocked</div>
+    <div class="stat-val" id="unblocked-stat">14</div>
+    <div class="stat-sub">redirects today</div>
+  </div>
+  <div class="stat-card error">
+    <div class="stat-label">Waste this month</div>
+    <div class="stat-val">0M</div>
+    <div class="stat-sub">vs 12B before TokenFlow</div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="card">
+    <div class="card-title">Live usage — per user</div>
+    <div id="user-list"></div>
+  </div>
+  <div>
+    <div class="pool-card">
+      <div class="pool-label">Shared pool</div>
+      <div class="pool-val" id="pool-num">847M</div>
+      <div class="pool-sub">from PM and designer surplus</div>
+      <div class="pool-track"><div class="pool-fill" id="pool-bar" style="width:68%"></div></div>
+    </div>
+    <div class="log-card">
+      <div class="card-title">Event log</div>
+      <div id="event-log"></div>
+    </div>
+  </div>
+</div>
+
+<div class="actions">
+  <button class="btn-filled" onclick="simulateBlock()">Simulate engineer hitting limit</button>
+  <button class="btn-tonal" onclick="resetMonth()">Reset monthly cycle</button>
+</div>
+
+<!-- Live borrow controls (only shown in API mode) -->
+<div id="borrow-controls" style="display:none;margin-top:12px;background:var(--surface-container);border-radius:16px;padding:16px;">
+  <div style="font-size:10px;font-weight:700;color:var(--on-surface-variant);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;">Trigger borrow event</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:11px;color:var(--on-surface-variant);">Engineer (borrower)</label>
+      <select id="borrow-from" style="font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--outline-variant);border-radius:8px;padding:6px 10px;background:var(--surface);color:var(--on-surface);">
+        <option value="u1">Roie A.</option>
+        <option value="u2">Dan M.</option>
+        <option value="u3">Noa K.</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <label style="font-size:11px;color:var(--on-surface-variant);">Amount (M tokens)</label>
+      <input id="borrow-amount" type="number" value="50" min="1" max="200" style="font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--outline-variant);border-radius:8px;padding:6px 10px;background:var(--surface);color:var(--on-surface);width:100px;">
+    </div>
+    <button onclick="triggerBorrow()" style="align-self:flex-end;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;">Borrow from pool</button>
+    <button onclick="addUsage()" style="align-self:flex-end;background:var(--secondary-container);color:var(--on-secondary-container);border:none;border-radius:12px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer;">+50M usage</button>
+  </div>
+</div>
+
+<script>
+const users=[
+  {name:"Roie A.",role:"Claude Code · Eng",pct:98,borrowed:55,avatarCls:"eng",status:"pool"},
+  {name:"Dan M.",role:"Claude Code · Eng",pct:91,borrowed:30,avatarCls:"eng",status:"pool"},
+  {name:"Noa K.",role:"Claude Code · Eng",pct:87,borrowed:0,avatarCls:"eng",status:"low"},
+  {name:"Maya R.",role:"Claude.ai · Product",pct:28,borrowed:0,avatarCls:"pm",status:"ok"},
+  {name:"Yael S.",role:"Claude.ai · Design",pct:19,borrowed:0,avatarCls:"pm",status:"ok"},
+  {name:"Tom L.",role:"Claude.ai · Product",pct:12,borrowed:0,avatarCls:"pm",status:"ok"},
+  {name:"Amir B.",role:"Claude.ai · HR",pct:5,borrowed:0,avatarCls:"ops",status:"ok"},
+  {name:"Shira N.",role:"Claude.ai · Finance",pct:3,borrowed:0,avatarCls:"ops",status:"ok"},
+];
+const ownColor={eng:"#6750A4",pm:"#625B71",ops:"#CAC4D0"};
+const events=[
+  {time:"09:42",msg:`<span class="ev-primary">→ Redirected</span> Roie pulled 120M from pool`},
+  {time:"09:38",msg:`<span class="ev-primary">→ Redirected</span> Dan pulled 80M from pool`},
+  {time:"09:31",msg:`<span class="ev-tertiary">⚡ Rebalanced</span> daily allocation updated`},
+  {time:"09:15",msg:`<span class="ev-error">✕ Blocked</span> Noa K. hit workspace limit`},
+  {time:"09:02",msg:`<span class="ev-primary">→ Redirected</span> Noa resumed via Maya surplus`},
+];
+const chipMap={pool:["chip-pool","from pool"],ok:["chip-ok","active"],low:["chip-low","near limit"],blocked:["chip-blocked","blocked"]};
+
+function renderUsers(){
+  document.getElementById('user-list').innerHTML=users.map(u=>{
+    const [cc,cl]=chipMap[u.status]||chipMap.ok;
+    const initials=u.name.split(' ').map(w=>w[0]).join('');
+    const trackW=u.trackPct??100;
+    const fillW=u.fillPct??Math.min(u.pct||0,100);
+    const borW=u.borPct??u.borrowed??0;
+    const usedM=u.usedM??u.pct;
+    const allocM=u.allocM??100;
+    return `<div class="user-row">
+      <div class="avatar ${u.avatarCls}">${initials}</div>
+      <div class="user-info"><div class="user-name">${u.name}</div><div class="user-role">${u.role}</div></div>
+      <div class="bar-area">
+        <div class="bar-track" style="width:${trackW}%">
+          <div class="bar-own" style="width:${fillW}%;background:${ownColor[u.avatarCls]};"></div>
+          ${borW>0?`<div class="bar-pool" style="left:${fillW}%;width:${borW}%;background:#B0A0E8;"></div>`:''}
+        </div>
+        <div class="bar-label" style="width:${trackW}%"><span>${usedM}M / ${allocM}M</span>${borW>0?`<span class="ev-primary">+pool</span>`:''}</div>
+      </div>
+      <span class="chip ${cc}">${cl}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderEvents(){
+  document.getElementById('event-log').innerHTML=events.slice(0,5).map(e=>
+    `<div class="event"><span class="event-time">${e.time}</span><span class="event-txt">${e.msg}</span></div>`
+  ).join('');
+}
+
+let poolM=847,poolPct=68,unblocked=14;
+function updatePool(){
+  document.getElementById('pool-stat').textContent=poolM+'M';
+  document.getElementById('pool-num').textContent=poolM+'M';
+  document.getElementById('pool-bar').style.width=poolPct+'%';
+}
+
+function simulateBlock(){
+  const now=new Date();
+  const t=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  users[2].status='blocked';users[2].pct=100;renderUsers();
+  events.unshift({time:t,msg:`<span class="ev-error">✕ Blocked</span> Noa K. hit limit — searching pool...`});
+  renderEvents();
+  setTimeout(()=>{
+    users[2].status='pool';users[2].borrowed=45;
+    users[3].pct=Math.max(users[3].pct-8,4);
+    poolM=Math.max(poolM-45,100);poolPct=Math.max(poolPct-4,10);
+    unblocked++;document.getElementById('unblocked-stat').textContent=unblocked;
+    updatePool();renderUsers();
+    events.unshift({time:t,msg:`<span class="ev-primary">→ Redirected</span> Noa pulled 45M from Maya R. surplus`});
+    renderEvents();
+  },1200);
+}
+
+function resetMonth(){
+  users.forEach(u=>{u.borrowed=0;u.status=u.avatarCls==='eng'?'pool':'ok';});
+  users[0].pct=98;users[1].pct=91;users[2].pct=87;
+  users[3].pct=28;users[4].pct=19;users[5].pct=12;users[6].pct=5;users[7].pct=3;
+  poolM=847;poolPct=68;
+  const now=new Date();
+  const t=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+  events.unshift({time:t,msg:`<span class="ev-tertiary">⚡ Rebalanced</span> monthly cycle reset from Anthropic API`});
+  updatePool();renderUsers();renderEvents();
+}
+
+// ── API connection state ──────────────────────────────────────────────────
+let apiMode=false, ws=null, pollTimer=null, simTimer=null;
+
+function toggleConnection(){
+  const panel=document.getElementById('api-config');
+  panel.style.display=panel.style.display==='none'?'flex':'none';
+}
+
+async function connectToAPI(){
+  const url=document.getElementById('api-url').value.replace(/\/$/,'');
+  const token=document.getElementById('api-token').value;
+  setStatus('Connecting…','var(--on-surface-variant)');
+
+  try{
+    const r=await fetch(`${url}/admin/pool`,{headers:{Authorization:`Bearer ${token}`}});
+    if(!r.ok)throw new Error(`${r.status} ${r.statusText}`);
+    apiMode=true; _apiUrl=url; _apiToken=token;
+    stopSim();
+    setStatus('Connected ✓','#386A20');
+    document.getElementById('live-label').textContent='Live';
+    document.getElementById('live-dot').style.background='#386A20';
+    document.getElementById('api-config').style.display='none';
+    document.getElementById('connect-btn').textContent='API connected';
+    document.getElementById('borrow-controls').style.display='block';
+
+    // Start REST polling
+    await fetchAll(url,token);
+    pollTimer=setInterval(()=>fetchAll(url,token),5000);
+
+    // Open WebSocket
+    const wsUrl=(url.replace(/^http/,'ws'))+'/admin/ws';
+    openWS(wsUrl,token,url);
+  }catch(e){
+    setStatus('Failed: '+e.message,'var(--error)');
+  }
+}
+
+function disconnectAPI(){
+  apiMode=false;
+  if(ws){ws.close();ws=null;}
+  clearInterval(pollTimer);
+  setStatus('','var(--on-surface-variant)');
+  document.getElementById('live-label').textContent='Demo mode';
+  document.getElementById('live-dot').style.background='var(--primary)';
+  document.getElementById('connect-btn').textContent='Connect to API';
+  document.getElementById('api-config').style.display='none';
+  startSim();
+}
+
+function setStatus(msg,color){
+  const el=document.getElementById('conn-status');
+  el.textContent=msg; el.style.color=color;
+}
+
+// ── REST polling ──────────────────────────────────────────────────────────
+async function fetchAll(url,token){
+  const h={Authorization:`Bearer ${token}`};
+  try{
+    const [poolRes,usageRes,evRes]=await Promise.all([
+      fetch(`${url}/admin/pool`,{headers:h}).then(r=>r.json()),
+      fetch(`${url}/admin/usage`,{headers:h}).then(r=>r.json()),
+      fetch(`${url}/admin/events?limit=10`,{headers:h}).then(r=>r.json()),
+    ]);
+    applyPool(poolRes);
+    applyUsers(usageRes.users||[]);
+    applyEvents(evRes.events||[]);
+  }catch(e){console.warn('[poll]',e);}
+}
+
+function applyPool(data){
+  const m=Math.round((data.available_tokens||0)/1e6);
+  poolM=m; poolPct=parseFloat(data.pct||0);
+  updatePool();
+}
+
+function applyUsers(apiUsers){
+  if(!apiUsers.length)return;
+  const roleMap={engineer:'eng',pm:'pm',designer:'pm',ops:'ops'};
+  const maxAlloc=Math.max(...apiUsers.map(u=>u.allocation||1));
+  users.length=0;
+  apiUsers.forEach(u=>{
+    const alloc=u.allocation||1;
+    const used=u.used||0;
+    const borrowed=u.borrowed||0;
+    const trackPct=Math.round(alloc/maxAlloc*100);       // bar track width
+    const fillPct=Math.min(Math.round(used/alloc*100),100); // fill within track
+    const borPct=Math.min(Math.round(borrowed/alloc*100),30);
+    const cls=roleMap[u.role]||'ops';
+    let status='ok';
+    if(u.role==='engineer')status=fillPct>=100?'pool':(fillPct>=80?'low':'ok');
+    const usedM=Math.round(used/1e6);
+    const allocM=Math.round(alloc/1e6);
+    users.push({name:u.name||u.id,role:u.role,trackPct,fillPct,borPct,usedM,allocM,avatarCls:cls,status});
+  });
+  renderUsers();
+}
+
+function applyEvents(apiEvs){
+  events.length=0;
+  apiEvs.forEach(e=>{
+    const t=new Date(e.ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+    const amt=Math.round((e.amount||0)/1e6);
+    events.push({time:t,msg:`<span class="ev-primary">→ Redirected</span> ${e.borrower} pulled ${amt}M from pool`});
+  });
+  renderEvents();
+}
+
+// ── WebSocket ─────────────────────────────────────────────────────────────
+function openWS(wsUrl,token,restUrl){
+  try{ws=new WebSocket(wsUrl);}catch(e){return;}
+  ws.onopen=()=>console.log('[ws] connected');
+  ws.onmessage=({data})=>{
+    try{
+      const msg=JSON.parse(data);
+      if(msg.type==='pool'){applyPool({available_tokens:msg.value,pct:msg.value/12500000});}
+      if(msg.type==='event'){
+        const t=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+        const amt=Math.round((msg.amount||0)/1e6);
+        events.unshift({time:t,msg:`<span class="ev-primary">→ Redirected</span> ${msg.borrower} pulled ${amt}M from pool`});
+        renderEvents();
+        const h={Authorization:`Bearer ${token}`};
+        fetch(`${restUrl}/admin/usage`,{headers:h}).then(r=>r.json()).then(d=>applyUsers(d.users||[]));
+      }
+    }catch(_){}
+  };
+  ws.onclose=()=>{if(apiMode)setTimeout(()=>openWS(wsUrl,token,restUrl),3000);};
+}
+
+// ── Live borrow controls ──────────────────────────────────────────────────
+let _apiUrl='', _apiToken='';
+
+async function triggerBorrow(){
+  const uid=document.getElementById('borrow-from').value;
+  const amountM=parseInt(document.getElementById('borrow-amount').value)||50;
+  const amount=amountM*1_000_000;
+  const ts=new Date().toISOString();
+  await fetch(`${_apiUrl}/admin/borrow`,{
+    method:'POST',
+    headers:{Authorization:`Bearer ${_apiToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({uid,amount,ts}),
+  });
+}
+
+async function addUsage(){
+  const uid=document.getElementById('borrow-from').value;
+  const amountM=50;
+  await fetch(`${_apiUrl}/admin/add-usage`,{
+    method:'POST',
+    headers:{Authorization:`Bearer ${_apiToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({uid,amount:amountM*1_000_000}),
+  });
+}
+
+// ── Simulation (demo mode) ────────────────────────────────────────────────
+function startSim(){
+  simTimer=setInterval(()=>{
+    users.forEach(u=>{
+      if(u.avatarCls==='eng'&&u.status!=='blocked')u.pct=Math.min(u.pct+(Math.random()*1.5),u.borrowed>0?145:99);
+      else if(u.avatarCls!=='eng')u.pct=Math.max(u.pct+(Math.random()*.4-.1),1);
+    });
+    poolM=Math.max(poolM-(Math.random()*2|0),100);
+    poolPct=Math.max(poolPct-.2,10);
+    updatePool();renderUsers();
+  },2000);
+}
+
+function stopSim(){clearInterval(simTimer);}
+
+renderUsers();renderEvents();updatePool();
+startSim();
+</script>
+</body>
+</html>

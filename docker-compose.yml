@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+  identity-agent:
+    build: ./identity-agent
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_URL: redis://redis:6379
+      OKTA_SCIM_URL: ${OKTA_SCIM_URL}
+      OKTA_SCIM_TOKEN: ${OKTA_SCIM_TOKEN}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  counter-agent:
+    build: ./counter-agent
+    ports:
+      - "8082:8082"
+    environment:
+      REDIS_URL: redis://redis:6379
+      ANTHROPIC_API_URL: https://api.anthropic.com
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  pool-agent:
+    build: ./pool-agent
+    ports:
+      - "8083:8083"
+    environment:
+      REDIS_URL: redis://redis:6379
+      ANTHROPIC_API_URL: https://api.anthropic.com
+      ANTHROPIC_POOL_KEY: ${ANTHROPIC_POOL_KEY}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  rebalancer-agent:
+    build: ./rebalancer-agent
+    profiles: [admin]   # excluded from default `up`; run with: docker compose --profile admin run rebalancer-agent
+    environment:
+      REDIS_URL: redis://redis:6379
+      ANTHROPIC_ADMIN_KEY: ${ANTHROPIC_ADMIN_KEY:-placeholder}
+      ANTHROPIC_ORG_ID: ${ANTHROPIC_ORG_ID:-placeholder}
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  dashboard-agent:
+    build: ./dashboard-agent
+    ports:
+      - "8080:8080"
+    environment:
+      REDIS_URL: redis://redis:6379
+      ADMIN_DASHBOARD_TOKEN: ${ADMIN_DASHBOARD_TOKEN}
+      DASHBOARD_PORT: 8080
+    depends_on:
+      redis:
+        condition: service_healthy

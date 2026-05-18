@@ -1,0 +1,18 @@
+{
+  "_comment": "Demo config. Mock returns 5k tokens per call (3k input + 2k output).",
+  "_flow":    "engineer: 8 calls fills 40k → 9th BORROW | pm: 4 calls fills 20k → 5th BORROW | hr: 2 calls fills 10k → 3rd BORROW",
+
+  "pool_tokens": 30000,
+
+  "allocations": {
+    "engineer": 40000,
+    "pm":       20000,
+    "hr":       10000
+  },
+
+  "users": {
+    "engineer@test.com": { "role": "engineer", "name": "Engineer" },
+    "pm@test.com":       { "role": "pm",       "name": "PM"       },
+    "hr@test.com":       { "role": "hr",       "name": "HR"       }
+  }
+}
