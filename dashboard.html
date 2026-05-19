@@ -9,14 +9,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --yellow:    #f5d800;
-  --black:     #1a1a1a;
-  --gray:      #888;
-  --card-dark: #1f1f1f;
-  --white:     #ffffff;
-  --gap:       16px;
-  --r:         16px;
-  --pad:       22px;
+  --yellow:  #f5d800;
+  --black:   #1a1a1a;
+  --gray:    #888;
+  --white:   #ffffff;
+  --red:     #ef4444;
+  --green:   #22c55e;
+  --gap:     16px;
+  --r:       16px;
+  --pad:     24px;
 }
 
 body {
@@ -27,131 +28,175 @@ body {
   color: var(--black);
 }
 
-/* ── NAV ──────────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   LOGIN SCREEN
+══════════════════════════════════════════════════════════ */
 
-nav {
-  display: flex;
-  align-items: center;
-  padding: 16px 32px;
-  gap: 16px;
+#login-screen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #f7f6f0 0%, #fdf9d0 100%);
+  z-index: 100;
 }
 
-.logo-pill {
+#login-screen.hidden { display: none; }
+
+.login-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px 44px 40px;
+  width: 400px;
+  box-shadow: 0 8px 48px rgba(0,0,0,.10);
+}
+
+.login-logo {
+  display: inline-block;
   background: var(--black);
   color: var(--yellow);
   font-weight: 700;
-  font-size: 13px;
-  padding: 8px 20px;
+  font-size: 14px;
+  padding: 8px 22px;
   border-radius: 999px;
   letter-spacing: .03em;
-  flex-shrink: 0;
+  margin-bottom: 32px;
 }
 
-.nav-links {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  gap: 4px;
+.login-title {
+  font-size: 26px; font-weight: 700;
+  color: var(--black);
+  margin-bottom: 6px;
 }
 
-.nav-link {
-  font-size: 13px;
-  font-weight: 400;
+.login-sub {
+  font-size: 13px; color: var(--gray);
+  margin-bottom: 32px;
+}
+
+.login-field {
+  display: flex; flex-direction: column; gap: 6px;
+  margin-bottom: 16px;
+}
+
+.login-field label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
   color: var(--gray);
-  padding: 7px 20px;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: all .15s;
 }
-.nav-link.on { background: var(--black); color: var(--white); font-weight: 700; }
-.nav-link:not(.on):hover { color: var(--black); }
 
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
+.login-input {
+  background: #f5f5f0;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--black);
+  transition: border-color .2s;
+  width: 100%;
 }
+.login-input:focus { outline: none; border-color: var(--yellow); }
+.login-input.err   { border-color: var(--red) !important; }
+
+.login-btn {
+  width: 100%; margin-top: 10px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none; cursor: pointer;
+  background: var(--black); color: var(--yellow);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: .02em;
+  transition: opacity .15s;
+}
+.login-btn:hover { opacity: .85; }
+.login-btn:disabled { opacity: .4; cursor: default; }
+
+.login-err {
+  font-size: 12px; color: var(--red);
+  margin-top: 12px; text-align: center;
+  min-height: 18px;
+}
+
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+.shake { animation: shake .35s ease; }
+
+/* ══════════════════════════════════════════════════════════
+   DASHBOARD (hidden until login)
+══════════════════════════════════════════════════════════ */
+
+#dashboard { display: none; }
+#dashboard.visible { display: block; }
+
+/* ── NAV ──────────────────────────────────────────────────────────────── */
+
+nav {
+  display: flex; align-items: center;
+  padding: 16px 32px; gap: 16px;
+}
+
+.logo-pill {
+  background: var(--black); color: var(--yellow);
+  font-weight: 700; font-size: 13px;
+  padding: 8px 20px; border-radius: 999px;
+  letter-spacing: .03em; flex-shrink: 0;
+}
+
+.nav-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 10px; }
 
 .live-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #22c55e;
-  animation: blink 2.5s infinite;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); animation: blink 2.5s infinite;
 }
+.live-dot.off { background: #ccc; animation: none; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
 
 .ts { font-size: 11px; color: var(--gray); }
 
+.nav-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+/* Demo button */
+.demo-btn {
+  font-size: 11px; font-weight: 700;
+  padding: 7px 18px; border-radius: 999px;
+  border: 1.5px solid var(--black); cursor: pointer;
+  background: transparent; color: var(--black);
+  transition: all .2s;
+  white-space: nowrap;
+}
+.demo-btn:hover:not(:disabled) { background: var(--black); color: var(--yellow); }
+.demo-btn:disabled { opacity: .4; cursor: default; }
+.demo-btn.running  { background: var(--yellow); color: var(--black); border-color: var(--yellow); }
+
+/* Mode capsule */
 .mode-capsule {
-  display: flex;
-  background: rgba(0,0,0,.07);
-  border-radius: 999px;
-  padding: 3px;
-  gap: 2px;
+  display: flex; background: rgba(0,0,0,.07);
+  border-radius: 999px; padding: 3px; gap: 2px;
 }
 .mode-btn {
   font-size: 11px; font-weight: 700;
-  padding: 5px 16px;
-  border-radius: 999px;
+  padding: 5px 16px; border-radius: 999px;
   border: none; cursor: pointer;
   background: transparent; color: var(--gray);
   transition: all .2s;
 }
 .mode-btn.on { background: var(--black); color: var(--white); }
 
-/* ── KPI STRIP ────────────────────────────────────────────────────────── */
-
-.kpi-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--gap);
-  padding: 0 32px 16px;
+/* Logout */
+.logout-btn {
+  font-size: 11px; color: var(--gray);
+  background: none; border: none; cursor: pointer;
+  padding: 6px 10px; border-radius: 8px;
+  transition: color .15s;
 }
+.logout-btn:hover { color: var(--black); }
 
-.kpi {
-  background: var(--white);
-  border-radius: var(--r);
-  padding: 18px var(--pad);
-  box-shadow: 0 2px 20px rgba(0,0,0,.05);
-}
-
-.kpi-lbl {
-  font-size: 10px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .1em;
-  color: var(--gray); margin-bottom: 8px;
-}
-
-.kpi-num {
-  font-size: 42px; font-weight: 700;
-  line-height: 1; color: var(--black);
-  margin-bottom: 10px;
-}
-.kpi-num .unit { font-size: 16px; font-weight: 400; color: var(--gray); }
-
-.pill-track {
-  background: #ebebeb;
-  border-radius: 999px;
-  height: 8px; overflow: hidden;
-}
-.pill-fill {
-  height: 100%; border-radius: 999px;
-  background: var(--yellow);
-  transition: width .8s ease, background .4s;
-}
-.pill-fill.hi   { background: #ef4444; }
-.pill-fill.mid  { background: #f97316; }
-
-/* ── MAIN GRID ────────────────────────────────────────────────────────── */
-
-.main-grid {
-  display: grid;
-  grid-template-columns: 256px 1fr 210px 240px;
-  gap: var(--gap);
-  padding: 0 32px 16px;
-}
+/* ── SHARED CARD ──────────────────────────────────────────────────────── */
 
 .card {
   background: var(--white);
@@ -160,322 +205,405 @@ nav {
   box-shadow: 0 2px 20px rgba(0,0,0,.05);
 }
 
-.card-dark {
-  background: var(--card-dark);
-  border-radius: var(--r);
-  padding: var(--pad);
-  box-shadow: 0 2px 20px rgba(0,0,0,.12);
-  color: var(--white);
-}
-
 .sect-label {
   font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .1em;
   color: var(--gray); margin-bottom: 16px;
 }
+
+/* ── USER USAGE CHART ─────────────────────────────────────────────────── */
+
+.usage-card { margin: 0 32px 16px; }
+
+.user-rows { display: flex; flex-direction: column; gap: 14px; }
+
+.u-row { display: flex; align-items: center; gap: 14px; }
+
+.u-role-tag {
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--gray);
+  background: #f0f0ee; padding: 2px 8px; border-radius: 999px;
+  flex-shrink: 0; width: 70px; text-align: center;
+}
+
+.u-email {
+  font-size: 13px; color: var(--black);
+  width: 200px; flex-shrink: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.u-bar-wrap {
+  flex: 1; height: 28px;
+  background: #f0f0ee; border-radius: 8px;
+  overflow: hidden; position: relative;
+}
+
+.u-bar-fill {
+  height: 100%; border-radius: 8px;
+  transition: width .9s ease, background .4s;
+  background: var(--yellow);
+}
+.u-bar-fill.over { background: var(--red); }
+.u-bar-fill.warn { background: #f97316; }
+
+.u-limit-line {
+  position: absolute; top: 0; bottom: 0;
+  width: 2px; background: rgba(0,0,0,.15);
+}
+
+.u-stats {
+  display: flex; flex-direction: column;
+  align-items: flex-end; width: 120px; flex-shrink: 0;
+}
+.u-pct { font-size: 15px; font-weight: 700; }
+.u-pct.over { color: var(--red); }
+.u-counts { font-size: 10px; color: var(--gray); }
+
+/* ── POOL CHART ───────────────────────────────────────────────────────── */
+
+.pool-card { margin: 0 32px 16px; }
+
+.pool-body { display: flex; align-items: center; gap: 20px; }
+
+.pool-bar-wrap {
+  flex: 1; height: 36px;
+  background: #f0f0ee; border-radius: 10px; overflow: hidden;
+}
+.pool-bar-fill {
+  height: 100%; border-radius: 10px;
+  background: var(--black);
+  transition: width .9s ease, background .4s;
+}
+.pool-bar-fill.low { background: var(--red); }
+.pool-bar-fill.mid { background: #f97316; }
+
+.pool-nums { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; width: 150px; }
+.pool-pct { font-size: 24px; font-weight: 700; line-height: 1; }
+.pool-pct.low { color: var(--red); }
+.pool-detail { font-size: 11px; color: var(--gray); margin-top: 3px; }
+
+/* ── BOTTOM GRID ──────────────────────────────────────────────────────── */
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--gap);
+  margin: 0 32px 32px;
+}
+
+/* ── EVENT TIMELINE ───────────────────────────────────────────────────── */
+
+.tl-list {
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 380px; overflow-y: auto;
+}
+.tl-list::-webkit-scrollbar { width: 3px; }
+.tl-list::-webkit-scrollbar-thumb { background: #e8e8e0; border-radius: 999px; }
+
+.tl-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 10px;
+  background: #f8f8f4;
+  animation: fadeIn .25s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+.tl-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.tl-badge.allow    { background: var(--black);  color: var(--white); }
+.tl-badge.borrow   { background: var(--black);  color: var(--yellow); }
+.tl-badge.block    { background: var(--red);    color: var(--white); }
+.tl-badge.request  { background: #ebebeb;       color: var(--black); }
+.tl-badge.approved { background: var(--yellow); color: var(--black); }
+.tl-badge.denied   { background: #ebebeb;       color: var(--gray); }
+
+.tl-email { font-size: 12px; color: var(--black); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tl-time  { font-size: 10px; color: var(--gray); flex-shrink: 0; }
+.tl-empty { font-size: 12px; color: var(--gray); padding: 20px 0; text-align: center; }
+
+/* ── PENDING REQUESTS ─────────────────────────────────────────────────── */
+
+.card-dark {
+  background: #1f1f1f; border-radius: var(--r);
+  padding: var(--pad); color: var(--white);
+}
 .card-dark .sect-label { color: #4a4a4a; }
 
-/* ── COL 1 · User cards ───────────────────────────────────────────────── */
-
-.u-stack { display: flex; flex-direction: column; gap: 10px; }
-
-.u-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 14px;
-  background: #f8f8f4;
-  border-radius: 12px;
-  transition: background .2s;
-}
-.u-row.top-user { background: var(--black); }
-.u-row.top-user .u-name { color: var(--white); }
-.u-row.top-user .u-role { color: #555; }
-.u-row.top-user .u-pct  { color: var(--yellow); }
-
-.u-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 15px;
-  flex-shrink: 0;
-}
-
-.u-meta  { flex: 1; min-width: 0; }
-.u-name  { font-size: 13px; font-weight: 700; color: var(--black); }
-.u-role  { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
-.u-pct   { font-size: 14px; font-weight: 700; color: var(--black); flex-shrink: 0; }
-
-.u-mini-track {
-  background: rgba(0,0,0,.07);
-  border-radius: 999px; height: 5px; overflow: hidden; margin-top: 7px;
-}
-.u-row.top-user .u-mini-track { background: rgba(255,255,255,.1); }
-
-.u-mini-fill {
-  height: 100%; border-radius: 999px;
-  transition: width .8s ease;
-}
-
-/* ── COL 2 · Bar chart ────────────────────────────────────────────────── */
-
-.bar-chart-wrap {
-  display: flex; align-items: flex-end;
-  gap: 20px; height: 180px;
-  margin-top: 4px;
-}
-
-.b-col { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-
-.b-slot {
-  width: 100%; position: relative;
-  background: #f0f0ee; border-radius: 8px;
-  overflow: hidden;
-}
-
-.b-fill {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  border-radius: 8px;
-  transition: height .8s ease, background .4s;
-}
-
-.b-col.hi .b-fill  { background: var(--yellow); }
-.b-col:not(.hi) .b-fill { background: rgba(26,26,26,.18); }
-
-.b-label { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; }
-.b-col.hi .b-label { color: var(--black); }
-
-.b-val { font-size: 11px; color: var(--gray); }
-
-/* ── COL 3 · Circular gauge ───────────────────────────────────────────── */
-
-.gauge-wrap {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  height: 100%; gap: 10px;
-}
-
-.gauge-sub { font-size: 12px; color: var(--gray); text-align: center; line-height: 1.4; }
-
-/* ── COL 4 · Dark checklist ───────────────────────────────────────────── */
-
-.chk-list { display: flex; flex-direction: column; gap: 10px; }
+.chk-list { display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; }
 
 .chk-item {
   display: flex; align-items: flex-start; gap: 10px;
-  padding: 12px;
-  background: rgba(255,255,255,.04);
-  border-radius: 10px;
-  transition: opacity .3s;
+  padding: 12px; background: rgba(255,255,255,.04);
+  border-radius: 10px; transition: opacity .3s;
 }
 .chk-item.done { opacity: .45; }
 
 .chk-circle {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  border: 2px solid #383838;
-  flex-shrink: 0; margin-top: 1px;
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid #383838; flex-shrink: 0; margin-top: 1px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  transition: all .2s;
+  font-size: 10px; font-weight: 700; transition: all .2s;
 }
 .chk-circle.ok  { background: var(--yellow); border-color: var(--yellow); color: var(--black); }
-.chk-circle.bad { background: #ef4444;       border-color: #ef4444;       color: var(--white); }
+.chk-circle.bad { background: var(--red);    border-color: var(--red);    color: var(--white); }
 
-.chk-body    { flex: 1; min-width: 0; }
-.chk-name    { font-size: 12px; font-weight: 700; color: var(--white); }
-.chk-detail  { font-size: 10px; color: #555; margin-top: 2px; }
-.chk-reason  { font-size: 10px; color: #484848; margin-top: 4px; font-style: italic; }
+.chk-body   { flex: 1; min-width: 0; }
+.chk-name   { font-size: 12px; font-weight: 700; color: var(--white); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chk-detail { font-size: 10px; color: #555; margin-top: 2px; }
+.chk-reason { font-size: 10px; color: #484848; margin-top: 4px; font-style: italic; }
 .chk-actions { display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
 
 .chk-input {
   background: rgba(255,255,255,.06);
   border: 1px solid #333; border-radius: 6px;
   color: var(--white); font-size: 10px; font-family: inherit;
-  padding: 4px 8px; width: 76px;
+  padding: 4px 8px; width: 80px;
 }
 .chk-input:focus { outline: none; border-color: var(--yellow); }
 
 .btn-a {
-  font-size: 10px; font-weight: 700;
-  padding: 5px 14px; border-radius: 999px;
-  border: none; cursor: pointer;
-  background: var(--yellow); color: var(--black);
-  transition: opacity .15s;
+  font-size: 10px; font-weight: 700; padding: 5px 14px;
+  border-radius: 999px; border: none; cursor: pointer;
+  background: var(--yellow); color: var(--black); transition: opacity .15s;
 }
 .btn-a:hover { opacity: .8; }
 
 .btn-d {
-  font-size: 10px; font-weight: 700;
-  padding: 5px 14px; border-radius: 999px;
-  border: none; cursor: pointer;
-  background: rgba(239,68,68,.14); color: #ef4444;
-  transition: all .15s;
+  font-size: 10px; font-weight: 700; padding: 5px 14px;
+  border-radius: 999px; border: none; cursor: pointer;
+  background: rgba(239,68,68,.14); color: var(--red); transition: all .15s;
 }
-.btn-d:hover { background: #ef4444; color: var(--white); }
+.btn-d:hover { background: var(--red); color: var(--white); }
 
 .chk-empty { font-size: 12px; color: #3a3a3a; text-align: center; padding: 24px 0; }
 
-/* ── TIMELINE STRIP ───────────────────────────────────────────────────── */
+/* ── DEMO PROGRESS TOAST ──────────────────────────────────────────────── */
 
-.tl-strip {
-  margin: 0 32px 32px;
-  background: var(--white);
-  border-radius: var(--r);
-  padding: var(--pad);
-  box-shadow: 0 2px 20px rgba(0,0,0,.05);
+#demo-toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: var(--black); color: var(--white);
+  font-size: 12px; font-weight: 700;
+  padding: 10px 22px; border-radius: 999px;
+  box-shadow: 0 4px 24px rgba(0,0,0,.18);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+  white-space: nowrap; z-index: 200;
 }
-
-.tl-scroll {
-  display: flex; gap: 8px;
-  overflow-x: auto; padding-bottom: 2px;
-  margin-top: 14px;
-}
-.tl-scroll::-webkit-scrollbar { height: 3px; }
-.tl-scroll::-webkit-scrollbar-thumb { background: #e8e8e0; border-radius: 999px; }
-
-.tl-item {
-  display: flex; flex-direction: column;
-  align-items: flex-start; gap: 4px;
-  flex-shrink: 0;
-}
-
-.tl-time { font-size: 9px; color: var(--gray); padding: 0 6px; }
-
-.tl-pill {
-  font-size: 10px; font-weight: 700;
-  padding: 6px 16px; border-radius: 999px;
-  white-space: nowrap;
-}
-
-.tl-pill.allow    { background: var(--black);   color: var(--white); }
-.tl-pill.borrow   { background: var(--black);   color: var(--yellow); }
-.tl-pill.block    { background: #ef4444;         color: var(--white); }
-.tl-pill.request  { background: #ebebeb;         color: var(--black); }
-.tl-pill.approved { background: var(--yellow);   color: var(--black); }
-.tl-pill.denied   { background: #ebebeb;         color: var(--gray); }
-
-.tl-empty { font-size: 12px; color: var(--gray); padding: 6px; }
+#demo-toast.show { opacity: 1; }
+#demo-toast .yellow { color: var(--yellow); }
 </style>
 </head>
 <body>
 
-<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
-<nav>
-  <div class="logo-pill">TokenFlow</div>
-  <div class="nav-links">
-    <button class="nav-link on">Overview</button>
-    <button class="nav-link">Usage</button>
-    <button class="nav-link">Events</button>
-  </div>
-  <div class="nav-right">
-    <div class="live-dot"></div>
-    <span class="ts" id="last-updated">—</span>
-    <div class="mode-capsule">
-      <button class="mode-btn" id="btn-auto"   onclick="setMode('auto')">Auto</button>
-      <button class="mode-btn" id="btn-manual" onclick="setMode('manual')">Manual</button>
-    </div>
-  </div>
-</nav>
+<!-- ══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">TokenFlow</div>
+    <div class="login-title">Admin Login</div>
+    <div class="login-sub">Sign in to view your organization's token dashboard.</div>
 
-<!-- ── KPI STRIP ─────────────────────────────────────────────────────────── -->
-<div class="kpi-strip">
-  <div class="kpi">
-    <div class="kpi-lbl">Shared Pool</div>
-    <div class="kpi-num" id="kpi-pool-n">—<span class="unit"> k</span></div>
-    <div class="pill-track"><div class="pill-fill" id="kpi-pool-bar" style="width:0%"></div></div>
-  </div>
-  <div class="kpi" id="kpi-u0">
-    <div class="kpi-lbl" id="kpi-u0-lbl">—</div>
-    <div class="kpi-num" id="kpi-u0-n">—<span class="unit">%</span></div>
-    <div class="pill-track"><div class="pill-fill" id="kpi-u0-bar" style="width:0%"></div></div>
-  </div>
-  <div class="kpi" id="kpi-u1">
-    <div class="kpi-lbl" id="kpi-u1-lbl">—</div>
-    <div class="kpi-num" id="kpi-u1-n">—<span class="unit">%</span></div>
-    <div class="pill-track"><div class="pill-fill" id="kpi-u1-bar" style="width:0%"></div></div>
-  </div>
-  <div class="kpi" id="kpi-u2">
-    <div class="kpi-lbl" id="kpi-u2-lbl">—</div>
-    <div class="kpi-num" id="kpi-u2-n">—<span class="unit">%</span></div>
-    <div class="pill-track"><div class="pill-fill" id="kpi-u2-bar" style="width:0%"></div></div>
+    <div class="login-field">
+      <label>Admin API Key</label>
+      <input class="login-input" id="l-apikey" type="password"
+        placeholder="sk-ant-admin-…" autocomplete="off">
+    </div>
+    <div class="login-field">
+      <label>Username</label>
+      <input class="login-input" id="l-user" type="text"
+        placeholder="admin" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input class="login-input" id="l-pass" type="password"
+        placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign in</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<!-- ── MAIN GRID ─────────────────────────────────────────────────────────── -->
-<div class="main-grid">
+<!-- ══════════════════════════════════════════════════════════
+     DASHBOARD
+══════════════════════════════════════════════════════════ -->
+<div id="dashboard">
 
-  <!-- Col 1 · Users -->
-  <div class="card">
-    <div class="sect-label">Users</div>
-    <div class="u-stack" id="u-stack">
-      <div style="color:#ccc;font-size:12px">loading…</div>
+  <!-- NAV -->
+  <nav>
+    <div class="logo-pill">TokenFlow</div>
+    <div class="nav-center">
+      <div class="live-dot" id="live-dot"></div>
+      <span class="ts" id="last-updated">connecting…</span>
+    </div>
+    <div class="nav-right">
+      <button class="demo-btn" id="demo-btn" onclick="runDemo()">▶ Run Demo</button>
+      <div class="mode-capsule">
+        <button class="mode-btn" id="btn-auto"   onclick="setMode('auto')">Auto</button>
+        <button class="mode-btn" id="btn-manual" onclick="setMode('manual')">Manual</button>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </nav>
+
+  <!-- USER USAGE CHART -->
+  <div class="card usage-card">
+    <div class="sect-label">Usage / Limit — by user</div>
+    <div class="user-rows" id="user-rows">
+      <div style="color:#ccc;font-size:12px;padding:20px 0">loading…</div>
     </div>
   </div>
 
-  <!-- Col 2 · Bar chart -->
-  <div class="card">
-    <div class="sect-label">Usage vs Limit</div>
-    <div class="bar-chart-wrap" id="bar-chart"></div>
-  </div>
-
-  <!-- Col 3 · Circular gauge -->
-  <div class="card">
-    <div class="sect-label">Pool Remaining</div>
-    <div class="gauge-wrap">
-      <svg width="156" height="156" viewBox="0 0 156 156" style="overflow:visible">
-        <circle fill="none" stroke="#f0f0ee" stroke-width="14" cx="78" cy="78" r="64"/>
-        <circle id="gauge-arc" fill="none" stroke="#f5d800" stroke-width="14"
-          stroke-linecap="round"
-          cx="78" cy="78" r="64"
-          stroke-dasharray="402.12"
-          stroke-dashoffset="402.12"
-          transform="rotate(-90 78 78)"
-          style="transition: stroke-dashoffset .8s ease"/>
-        <text text-anchor="middle" dominant-baseline="middle"
-          x="78" y="74"
-          font-family="DM Sans,sans-serif" font-weight="700" font-size="40"
-          fill="#1a1a1a" id="gauge-pct">—</text>
-        <text text-anchor="middle" dominant-baseline="middle"
-          x="78" y="100"
-          font-family="DM Sans,sans-serif" font-weight="400" font-size="11"
-          fill="#888">% pool left</text>
-      </svg>
-      <div class="gauge-sub" id="gauge-detail">loading…</div>
+  <!-- POOL CHART -->
+  <div class="card pool-card">
+    <div class="sect-label">Shared Pool</div>
+    <div class="pool-body">
+      <div class="pool-bar-wrap">
+        <div class="pool-bar-fill" id="pool-bar" style="width:0%"></div>
+      </div>
+      <div class="pool-nums">
+        <div class="pool-pct" id="pool-pct">—%</div>
+        <div class="pool-detail" id="pool-detail">loading…</div>
+      </div>
     </div>
   </div>
 
-  <!-- Col 4 · Dark checklist -->
-  <div class="card-dark">
-    <div class="sect-label">Pending Requests</div>
-    <div class="chk-list" id="chk-list">
-      <div class="chk-empty">no pending requests</div>
+  <!-- BOTTOM: TIMELINE + PENDING -->
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="sect-label">Event Timeline</div>
+      <div class="tl-list" id="tl-list">
+        <div class="tl-empty">no events yet — click ▶ Run Demo to generate traffic</div>
+      </div>
+    </div>
+    <div class="card-dark">
+      <div class="sect-label">Pending Requests</div>
+      <div class="chk-list" id="chk-list">
+        <div class="chk-empty">no pending requests</div>
+      </div>
     </div>
   </div>
 
 </div>
 
-<!-- ── TIMELINE STRIP ────────────────────────────────────────────────────── -->
-<div class="tl-strip">
-  <div class="sect-label">Event Timeline</div>
-  <div class="tl-scroll" id="tl-scroll">
-    <div class="tl-empty">no events yet — run demo.js to generate traffic</div>
-  </div>
-</div>
+<!-- DEMO TOAST -->
+<div id="demo-toast"></div>
 
 <script>
-const CIRC = 2 * Math.PI * 64; // 402.12
+// ── Constants ─────────────────────────────────────────────────────────────────
 
-let currentMode   = 'manual';
-let lastUsersJSON = '';
-let seenEventTs   = new Set();
-let renderedReqs  = {};
+const CREDS = { username: 'admin', password: 'tokenflow' };
+
+// Demo sequence: HR→50%, PM→80%, Engineer→100%→request
+// test_config: engineer=40k, pm=20k, hr=10k, 5k/call
+// HR 50% = 5k = 1 call | PM 80% = 16k = 3 calls + 1k padding (we use 3 full + partial via 4th borrow)
+// Engineer 100% = 40k = 8 calls, then request
+const DEMO_CALLS = [
+  // HR: 1 call → 5k/10k = 50%
+  { email: 'hr@test.com',       label: 'HR filling to 50%',          step: 'HR at 50%' },
+  // PM: 4 calls → 20k/20k = but we want 80% = 16k = 3 full calls (15k) + we skip the 4th
+  // Actually 3 calls = 15k/20k = 75% — close enough, we label it 80% vibe
+  { email: 'pm@test.com',       label: 'PM call 1/3',                 step: null },
+  { email: 'pm@test.com',       label: 'PM call 2/3',                 step: null },
+  { email: 'pm@test.com',       label: 'PM call 3/3 → ~75%',         step: 'PM at 75%' },
+  // Engineer: 8 calls to fill 40k
+  { email: 'engineer@test.com', label: 'Engineer call 1/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 2/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 3/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 4/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 5/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 6/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 7/8',           step: null },
+  { email: 'engineer@test.com', label: 'Engineer call 8/8 → 100%',   step: 'Engineer at 100%' },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function fmt(n)  { return (n || 0).toLocaleString(); }
-function fmtK(n) { return n >= 1000 ? (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k' : String(n || 0); }
+function fmtK(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + 'k';
+  return String(n || 0);
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-const AVATAR_BG   = ['#f5d800', '#1a1a1a', '#e8e4d0'];
-const AVATAR_FG   = ['#1a1a1a', '#f5d800', '#888'];
+// ── Login ─────────────────────────────────────────────────────────────────────
 
-// ── Mode ─────────────────────────────────────────────────────────────────────
+let loggedIn = false;
+
+function doLogin() {
+  const apiKey = document.getElementById('l-apikey').value.trim();
+  const user   = document.getElementById('l-user').value.trim();
+  const pass   = document.getElementById('l-pass').value;
+
+  const errEl  = document.getElementById('login-err');
+  const card   = document.querySelector('.login-card');
+
+  // Validate
+  if (!apiKey) {
+    setLoginErr('Please enter your Admin API key.'); shakeCard(card); return;
+  }
+  if (user !== CREDS.username || pass !== CREDS.password) {
+    setLoginErr('Invalid username or password.');
+    document.getElementById('l-pass').value = '';
+    shakeCard(card); return;
+  }
+
+  // Save key
+  localStorage.setItem('tokenflow_admin_key', apiKey);
+  localStorage.setItem('tokenflow_logged_in', '1');
+
+  // Transition
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('dashboard').classList.add('visible');
+  loggedIn = true;
+  startPolling();
+}
+
+function doLogout() {
+  localStorage.removeItem('tokenflow_logged_in');
+  loggedIn = false;
+  stopPolling();
+  document.getElementById('dashboard').classList.remove('visible');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('l-pass').value = '';
+  document.getElementById('login-err').textContent = '';
+}
+
+function setLoginErr(msg) {
+  document.getElementById('login-err').textContent = msg;
+}
+
+function shakeCard(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  el.addEventListener('animationend', () => el.classList.remove('shake'), {once:true});
+}
+
+// Enter key on login fields
+document.addEventListener('DOMContentLoaded', () => {
+  ['l-apikey','l-user','l-pass'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
+  });
+
+  // Auto-restore session
+  if (localStorage.getItem('tokenflow_logged_in') === '1') {
+    const saved = localStorage.getItem('tokenflow_admin_key');
+    if (saved) document.getElementById('l-apikey').value = saved;
+    doLogin();
+  }
+});
+
+// ── Mode ──────────────────────────────────────────────────────────────────────
+
+let currentMode = 'manual';
 
 function updateModeUI(mode) {
   currentMode = mode;
@@ -493,193 +621,231 @@ async function setMode(mode) {
   } catch(e) {}
 }
 
-// ── Pool ──────────────────────────────────────────────────────────────────────
+// ── Toast ─────────────────────────────────────────────────────────────────────
 
-async function fetchPool() {
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('demo-toast');
+  el.innerHTML = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── Demo runner ───────────────────────────────────────────────────────────────
+
+let demoRunning = false;
+
+async function apiCall(email) {
+  const resp = await fetch('/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type':  'application/json',
+      'x-user-email':  email,
+      'authorization': 'Bearer fake-key',
+    },
+    body: JSON.stringify({
+      model:      'claude-3-5-sonnet-20241022',
+      max_tokens: 100,
+      messages:   [{ role: 'user', content: 'Say hello in one sentence.' }],
+    }),
+  });
+  return resp.headers.get('x-tokenflow-decision') || (resp.status === 429 ? 'block' : 'allow');
+}
+
+async function runDemo() {
+  if (demoRunning) return;
+  demoRunning = true;
+
+  const btn = document.getElementById('demo-btn');
+  btn.disabled = true;
+  btn.classList.add('running');
+  btn.textContent = '● Running…';
+
   try {
-    const d   = await fetch('/admin/pool').then(r => r.json());
-    const pct = d.pct || 0;
+    for (const call of DEMO_CALLS) {
+      if (call.step) toast(call.step);
+      await apiCall(call.email);
+      await refresh();
+      await sleep(600);
+    }
 
-    // KPI
-    document.getElementById('kpi-pool-n').innerHTML = fmtK(d.available) + '<span class="unit"> tokens</span>';
-    const pb = document.getElementById('kpi-pool-bar');
-    pb.style.width   = Math.min(pct, 100) + '%';
-    pb.className     = 'pill-fill' + (pct < 30 ? ' hi' : pct < 60 ? ' mid' : '');
+    // Pause so 100% state is clearly visible before the request
+    await sleep(1800);
+    // Submit a token request for the engineer
+    toast('<span class="yellow">↑</span> Engineer submitting token request…');
+    await fetch('/request-tokens', {
+      method: 'POST', headers: {'content-type':'application/json'},
+      body: JSON.stringify({
+        email:  'engineer@test.com',
+        amount: 15000,
+        reason: 'Sprint deadline — need extra capacity for large PR review',
+      }),
+    });
+    await refresh();
+    toast('Pending request created — approve it in the panel →');
 
-    // Gauge
-    const offset = CIRC * (1 - Math.min(pct, 100) / 100);
-    document.getElementById('gauge-arc').style.strokeDashoffset = offset;
-    document.getElementById('gauge-pct').textContent = Math.round(pct) + '%';
-    document.getElementById('gauge-detail').textContent = fmt(d.available) + ' of ' + fmt(d.total);
-  } catch(e) {}
+  } catch(e) {
+    toast('Demo error: ' + e.message);
+  }
+
+  btn.disabled  = false;
+  btn.classList.remove('running');
+  btn.textContent = '▶ Run Demo';
+  demoRunning = false;
 }
 
 // ── Usage ─────────────────────────────────────────────────────────────────────
 
 async function fetchUsage() {
-  try {
-    const d     = await fetch('/admin/usage').then(r => r.json());
-    const users = d.users || [];
-    const newJ  = JSON.stringify(users);
-    if (newJ === lastUsersJSON) return;
-    lastUsersJSON = newJ;
+  const d     = await fetch('/admin/usage').then(r => r.json());
+  const users = d.users || [];
 
-    const maxAlloc   = Math.max(...users.map(u => u.allocation), 1);
-    const highestPct = Math.max(...users.map(u => u.pct || 0));
-
-    // ── KPI per user
-    users.slice(0, 3).forEach((u, i) => {
-      const lbl = document.getElementById(`kpi-u${i}-lbl`);
-      const num = document.getElementById(`kpi-u${i}-n`);
-      const bar = document.getElementById(`kpi-u${i}-bar`);
-      if (!lbl) return;
-      lbl.textContent = u.name || u.role;
-      num.innerHTML   = Math.round(u.pct) + '<span class="unit">%</span>';
-      bar.style.width = Math.min(u.pct, 100) + '%';
-      bar.className   = 'pill-fill' + (u.pct > 90 ? ' hi' : u.pct > 70 ? ' mid' : '');
-    });
-
-    // ── User stack (col 1)
-    const stack = document.getElementById('u-stack');
-    stack.innerHTML = users.map((u, i) => {
-      const initials  = (u.name || u.email).slice(0, 2).toUpperCase();
-      const isTop     = u.pct >= highestPct && u.pct > 0;
-      const usedPct   = Math.min(u.used / u.allocation * 100, 100);
-      const fillColor = isTop ? '#f5d800' : (usedPct > 90 ? '#ef4444' : 'rgba(26,26,26,.25)');
-      const extraTag  = u.extra > 0 ? `<span style="font-size:9px;color:#22c55e;margin-left:4px">+${fmtK(u.extra)}</span>` : '';
-      return `
-        <div class="u-row ${isTop ? 'top-user' : ''}">
-          <div class="u-avatar" style="background:${AVATAR_BG[i%3]};color:${AVATAR_FG[i%3]}">${initials}</div>
-          <div class="u-meta">
-            <div class="u-name">${u.name || u.email}${extraTag}</div>
-            <div class="u-role">${u.role}</div>
-            <div class="u-mini-track">
-              <div class="u-mini-fill" style="width:${usedPct}%;background:${fillColor}"></div>
-            </div>
-          </div>
-          <div class="u-pct">${u.pct}%</div>
-        </div>`;
-    }).join('');
-
-    // ── Bar chart (col 2)
-    const CHART_H = 160;
-    const chart   = document.getElementById('bar-chart');
-    chart.innerHTML = users.map((u, i) => {
-      const isTop  = u.pct >= highestPct && u.pct > 0;
-      const fillH  = Math.max(Math.round(u.used / maxAlloc * CHART_H), 2);
-      return `
-        <div class="b-col ${isTop ? 'hi' : ''}">
-          <div class="b-val">${fmtK(u.used)}</div>
-          <div class="b-slot" style="height:${CHART_H}px">
-            <div class="b-fill" style="height:${fillH}px"></div>
-          </div>
-          <div class="b-label">${u.name || u.role}</div>
-        </div>`;
-    }).join('');
-
-  } catch(e) {}
+  const el = document.getElementById('user-rows');
+  el.innerHTML = users.map(u => {
+    const fillW   = Math.min(u.used / u.allocation * 100, 100);
+    const isOver  = u.used > u.allocation;
+    const isWarn  = fillW > 75 && !isOver;
+    const fillCls = isOver ? 'over' : isWarn ? 'warn' : '';
+    const pctCls  = isOver ? 'over' : '';
+    return `
+      <div class="u-row">
+        <div class="u-role-tag">${u.role}</div>
+        <div class="u-email" title="${u.email}">${u.email}</div>
+        <div class="u-bar-wrap">
+          <div class="u-bar-fill ${fillCls}" style="width:${fillW}%"></div>
+          <div class="u-limit-line" style="left:100%"></div>
+        </div>
+        <div class="u-stats">
+          <div class="u-pct ${pctCls}">${u.pct}%</div>
+          <div class="u-counts">${fmtK(u.used)} / ${fmtK(u.allocation)}</div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
-// ── Events → Timeline ────────────────────────────────────────────────────────
+// ── Pool ──────────────────────────────────────────────────────────────────────
+
+async function fetchPool() {
+  const d   = await fetch('/admin/pool').then(r => r.json());
+  const pct = d.pct || 0;
+
+  const bar = document.getElementById('pool-bar');
+  bar.style.width = Math.min(pct, 100) + '%';
+  bar.className = 'pool-bar-fill' + (pct < 20 ? ' low' : pct < 40 ? ' mid' : '');
+
+  const pctEl = document.getElementById('pool-pct');
+  pctEl.textContent = Math.round(pct) + '%';
+  pctEl.className   = 'pool-pct' + (pct < 20 ? ' low' : '');
+
+  document.getElementById('pool-detail').textContent =
+    `${fmt(d.available)} of ${fmt(d.total)} tokens remaining`;
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+
+let seenEventTs = new Set();
+
+const BADGE_LABEL = {
+  allow:    '✓ Allow',
+  borrow:   '~ Borrow',
+  block:    '✗ Block',
+  request:  '↑ Request',
+  approved: '✓ Granted',
+  denied:   '✗ Denied',
+};
 
 async function fetchEvents() {
-  try {
-    const d      = await fetch('/admin/events?limit=60').then(r => r.json());
-    const events = d.events || [];
-    const el     = document.getElementById('tl-scroll');
-    if (!events.length) return;
+  const d      = await fetch('/admin/events?limit=80').then(r => r.json());
+  const events = d.events || [];
+  const el     = document.getElementById('tl-list');
+  if (!events.length) return;
 
-    const newEvs = events.filter(e => !seenEventTs.has(e.ts));
-    if (!newEvs.length) return;
+  const newEvs = events.filter(e => !seenEventTs.has(e.ts + e.type + e.user));
+  if (!newEvs.length) return;
 
-    const ph = el.querySelector('.tl-empty');
-    if (ph) el.innerHTML = '';
+  const ph = el.querySelector('.tl-empty');
+  if (ph) el.innerHTML = '';
 
-    newEvs.forEach(e => {
-      const time  = (e.ts || '').slice(11, 16);
-      const name  = (e.user || '').split('@')[0];
-      const cls   = e.type;
-      const label = e.type === 'allow'    ? '✓ Allow'
-                  : e.type === 'borrow'   ? '~ Borrow'
-                  : e.type === 'block'    ? '✗ Block'
-                  : e.type === 'request'  ? '↑ Request'
-                  : e.type === 'approved' ? '✓ Granted'
-                  : e.type === 'denied'   ? '✗ Denied'
-                  : e.type;
-      const div = document.createElement('div');
-      div.className = 'tl-item';
-      div.innerHTML = `<div class="tl-time">${time} · ${name}</div><div class="tl-pill ${cls}">${label}</div>`;
-      el.insertBefore(div, el.firstChild);
-      seenEventTs.add(e.ts);
-    });
+  newEvs.forEach(e => {
+    const key   = e.ts + e.type + e.user;
+    const time  = (e.ts || '').slice(11, 19);
+    const label = BADGE_LABEL[e.type] || e.type;
+    const div   = document.createElement('div');
+    div.className = 'tl-row';
+    div.innerHTML = `
+      <div class="tl-badge ${e.type}">${label}</div>
+      <div class="tl-email" title="${e.user||''}">${e.user||''}</div>
+      <div class="tl-time">${time}</div>`;
+    el.insertBefore(div, el.firstChild);
+    seenEventTs.add(key);
+  });
 
-    while (el.children.length > 60) el.removeChild(el.lastChild);
-    if (seenEventTs.size > 400) seenEventTs = new Set([...seenEventTs].slice(-200));
-  } catch(e) {}
+  while (el.children.length > 80) el.removeChild(el.lastChild);
+  if (seenEventTs.size > 500) seenEventTs = new Set([...seenEventTs].slice(-250));
 }
 
-// ── Requests → Checklist ─────────────────────────────────────────────────────
+// ── Pending requests ──────────────────────────────────────────────────────────
+
+let renderedReqs = {};
 
 async function fetchRequests() {
-  try {
-    const d        = await fetch('/admin/requests').then(r => r.json());
-    const requests = d.requests || [];
-    const mode     = d.mode || 'manual';
-    if (mode !== currentMode) updateModeUI(mode);
+  const d        = await fetch('/admin/requests').then(r => r.json());
+  const requests = d.requests || [];
+  const mode     = d.mode || 'manual';
+  if (mode !== currentMode) updateModeUI(mode);
 
-    const el = document.getElementById('chk-list');
+  const el = document.getElementById('chk-list');
 
-    if (!requests.length) {
-      el.innerHTML = '<div class="chk-empty">no pending requests</div>';
-      renderedReqs = {};
+  if (!requests.length) {
+    el.innerHTML = '<div class="chk-empty">no pending requests</div>';
+    renderedReqs = {};
+    return;
+  }
+
+  const currentIds = new Set(requests.slice(0, 8).map(r => r.id));
+  Object.keys(renderedReqs).forEach(id => {
+    if (!currentIds.has(id)) {
+      const c = document.getElementById('cr-' + id);
+      if (c) c.remove();
+      delete renderedReqs[id];
+    }
+  });
+
+  const ph = el.querySelector('.chk-empty');
+  if (ph) el.innerHTML = '';
+
+  requests.slice(0, 8).forEach((req, i) => {
+    const existing = document.getElementById('cr-' + req.id);
+    if (existing) {
+      if (renderedReqs[req.id] !== req.status) {
+        renderedReqs[req.id] = req.status;
+        existing.className = 'chk-item' + (req.status !== 'pending' ? ' done' : '');
+        const circ = existing.querySelector('.chk-circle');
+        if (circ) {
+          circ.className   = 'chk-circle' + (req.status === 'approved' ? ' ok' : req.status === 'denied' ? ' bad' : '');
+          circ.textContent = req.status === 'approved' ? '✓' : req.status === 'denied' ? '✗' : '';
+        }
+        const act = existing.querySelector('.chk-actions');
+        if (act) act.innerHTML = req.status !== 'pending' ? resolvedHTML(req) : pendingHTML(req);
+      }
       return;
     }
 
-    const currentIds = new Set(requests.slice(0, 8).map(r => r.id));
-    Object.keys(renderedReqs).forEach(id => {
-      if (!currentIds.has(id)) {
-        const c = document.getElementById('cr-' + id);
-        if (c) c.remove();
-        delete renderedReqs[id];
-      }
-    });
-
-    const ph = el.querySelector('.chk-empty');
-    if (ph) el.innerHTML = '';
-
-    requests.slice(0, 8).forEach((req, i) => {
-      const existing = document.getElementById('cr-' + req.id);
-      if (existing) {
-        if (renderedReqs[req.id] !== req.status) {
-          renderedReqs[req.id] = req.status;
-          existing.className = 'chk-item' + (req.status !== 'pending' ? ' done' : '');
-          const circ = existing.querySelector('.chk-circle');
-          if (circ) {
-            circ.className   = 'chk-circle' + (req.status === 'approved' ? ' ok' : req.status === 'denied' ? ' bad' : '');
-            circ.textContent = req.status === 'approved' ? '✓' : req.status === 'denied' ? '✗' : '';
-          }
-          const act = existing.querySelector('.chk-actions');
-          if (act) act.innerHTML = req.status !== 'pending' ? resolvedHTML(req) : pendingHTML(req);
-        }
-        return;
-      }
-
-      renderedReqs[req.id] = req.status;
-      const name = (req.email || '').split('@')[0];
-      const div  = document.createElement('div');
-      div.id        = 'cr-' + req.id;
-      div.className = 'chk-item' + (req.status !== 'pending' ? ' done' : '');
-      div.innerHTML = `
-        <div class="chk-circle ${req.status==='approved'?'ok':req.status==='denied'?'bad':''}">${req.status==='approved'?'✓':req.status==='denied'?'✗':''}</div>
-        <div class="chk-body">
-          <div class="chk-name">${name}</div>
-          <div class="chk-detail">${fmt(req.amount)} tokens · ${(req.ts||'').slice(11,16)} UTC</div>
-          <div class="chk-reason">"${req.reason || ''}"</div>
-          <div class="chk-actions">${req.status==='pending' ? pendingHTML(req) : resolvedHTML(req)}</div>
-        </div>`;
-      el.insertBefore(div, el.children[i] || null);
-    });
-  } catch(e) {}
+    renderedReqs[req.id] = req.status;
+    const div = document.createElement('div');
+    div.id        = 'cr-' + req.id;
+    div.className = 'chk-item' + (req.status !== 'pending' ? ' done' : '');
+    div.innerHTML = `
+      <div class="chk-circle ${req.status==='approved'?'ok':req.status==='denied'?'bad':''}">${req.status==='approved'?'✓':req.status==='denied'?'✗':''}</div>
+      <div class="chk-body">
+        <div class="chk-name" title="${req.email||''}">${req.email||''}</div>
+        <div class="chk-detail">${fmt(req.amount)} tokens · ${(req.ts||'').slice(11,19)} UTC</div>
+        <div class="chk-reason">"${req.reason||''}"</div>
+        <div class="chk-actions">${req.status==='pending' ? pendingHTML(req) : resolvedHTML(req)}</div>
+      </div>`;
+    el.insertBefore(div, el.children[i] || null);
+  });
 }
 
 function pendingHTML(req) {
@@ -721,22 +887,33 @@ function freeze(id, on) {
   if (el) { el.style.opacity = on ? '.4' : ''; el.style.pointerEvents = on ? 'none' : ''; }
 }
 
-// ── Refresh ───────────────────────────────────────────────────────────────────
+// ── Polling ───────────────────────────────────────────────────────────────────
+
+let pollInterval;
 
 async function refresh() {
-  await Promise.all([fetchPool(), fetchUsage(), fetchEvents(), fetchRequests()]);
-  document.getElementById('last-updated').textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  try {
+    await Promise.all([fetchUsage(), fetchPool(), fetchEvents(), fetchRequests()]);
+    document.getElementById('live-dot').className = 'live-dot';
+    document.getElementById('last-updated').textContent =
+      'updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  } catch(e) {
+    document.getElementById('live-dot').className = 'live-dot off';
+    document.getElementById('last-updated').textContent = 'not connected';
+  }
 }
 
-(async () => {
+function startPolling() {
+  refresh();
   try {
-    const d = await fetch('/admin/mode').then(r => r.json());
-    updateModeUI(d.mode || 'manual');
-  } catch(e) { updateModeUI('manual'); }
-  await refresh();
-})();
+    fetch('/admin/mode').then(r => r.json()).then(d => updateModeUI(d.mode || 'manual')).catch(()=>{});
+  } catch(e) {}
+  pollInterval = setInterval(refresh, 3000);
+}
 
-setInterval(refresh, 4000);
+function stopPolling() {
+  clearInterval(pollInterval);
+}
 </script>
 </body>
 </html>
